@@ -1,0 +1,7 @@
+name: grafana
+
+pre_install_actions:
+
+project_files:
+  - docker-compose.grafana.yaml
+  - grafana/

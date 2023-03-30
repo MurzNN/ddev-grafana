@@ -1,0 +1,71 @@
+version: '3.6'
+
+services:
+  grafana:
+    container_name: "ddev-${DDEV_SITENAME}-grafana"
+    image: grafana/grafana:latest
+    entrypoint:
+      - /usr/share/grafana/bin/grafana-server
+      - --homepath=/usr/share/grafana
+      - --config=/etc/grafana-config/grafana.ini
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    volumes:
+      - ./grafana/grafana/config:/etc/grafana-config
+      - ./grafana/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/grafana/dashboards-provisioning:/etc/grafana/provisioning/dashboards
+      - ./grafana/grafana/dashboards:/var/lib/grafana/dashboards
+    networks: [default, ddev_default]
+    expose:
+      - 3000
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=3000:3000
+      - HTTPS_EXPOSE=3001:3000
+
+  prometheus:
+    container_name: "ddev-${DDEV_SITENAME}-prometheus"
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks: [default, ddev_default]
+    expose:
+      - 9090
+    volumes:
+      - ./grafana/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus-data:/prometheus
+
+  loki:
+    image: grafana/loki:latest
+    expose:
+      - 3100
+    volumes:
+      - ./grafana/loki/loki.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+
+  tempo:
+    container_name: "ddev-${DDEV_SITENAME}-tempo"
+    image: grafana/tempo:latest
+    volumes:
+      - ./grafana/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/data
+    command:
+      - "-config.file=/etc/tempo.yaml"
+    networks: [default, ddev_default]
+    expose:
+      - 3200
+      - 4317
+      - 4318
+
+volumes:
+  tempo-data:
+    name: "ddev-${DDEV_SITENAME}_tempo"
+  prometheus-data:
+    name: "ddev-${DDEV_SITENAME}_prometheus"
+  loki-data:
+    name: "ddev-${DDEV_SITENAME}_loki"

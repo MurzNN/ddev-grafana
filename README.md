@@ -38,7 +38,7 @@ ddev restart
 
 Integration with popular CMSs and frameworks:
 
-- Drupal CMS: [OpenTelemery module](https://www.drupal.org/project/opentelemetry).
+- Drupal CMS: [OpenTelemery module](https://www.drupal.org/project/opentelemetry)
 
 - Symfony: [OpenTelemetry Symfony auto-instrumentation](https://github.com/opentelemetry-php/contrib-auto-symfony)
 

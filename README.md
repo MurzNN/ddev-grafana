@@ -33,3 +33,13 @@ ddev restart
 3. Open the Grafana web interface via the url: http://your-project-name.ddev.site:3000/
 
 **Contributed and maintained by [@MurzNN](https://github.com/MurzNN).
+
+## Extra
+
+Integration with popular CMSs and frameworks:
+
+- Drupal CMS: [OpenTelemery module](https://www.drupal.org/project/opentelemetry).
+
+- Symfony: [OpenTelemetry Symfony auto-instrumentation](https://github.com/opentelemetry-php/contrib-auto-symfony)
+
+- Laravel: [Open Telemetry package](https://github.com/spatie/laravel-open-telemetry)

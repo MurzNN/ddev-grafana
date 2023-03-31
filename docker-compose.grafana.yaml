@@ -42,6 +42,8 @@ services:
 
   loki:
     image: grafana/loki:latest
+    container_name: "ddev-${DDEV_SITENAME}-loki"
+    networks: [default, ddev_default]
     expose:
       - 3100
     volumes:

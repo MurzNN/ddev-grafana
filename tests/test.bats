@@ -11,6 +11,15 @@ setup() {
   ddev start -y >/dev/null
 }
 
+health_checks() {
+  ddev exec "curl -s http://grafana:3000/api/health"
+  ddev exec "curl -s http://loki:3100/ready"
+  ddev exec "curl -s http://prometheus:9090/-/ready"
+  # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
+  # is not a good idea, just checking the version endpoint.
+  ddev exec "curl -s http://tempo:3200/status/version"
+}
+
 teardown() {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
@@ -26,15 +35,15 @@ teardown() {
   ddev restart
   # Do something here to verify functioning extra service
   # For extra credit, use a real CMS with actual config.
-  # ddev exec "curl -s elasticsearch:9200" | grep "${PROJNAME}-elasticsearch"
+  health_checks
 }
 
 @test "install from release" {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev get ddev/ddev-grafana with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ddev/ddev-grafana
+  echo "# ddev get MurzNN/ddev-grafana with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+  ddev get MurzNN/ddev-grafana
   ddev restart >/dev/null
-  # Do something useful here that verifies the add-on
-  # ddev exec "curl -s elasticsearch:9200" | grep "${PROJNAME}-elasticsearch"
+  health_checks
 }
+

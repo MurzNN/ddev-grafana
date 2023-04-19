@@ -1,0 +1,22 @@
+# This configuration is required to have services available locally in the
+# web container via localhost host, additionally to containers' hosts.
+# You can disable this if not needed, and use connections ony containers' hosts.
+
+services:
+  web:
+    ports:
+      - 8080 # A frontend app port.
+      - 9090 # Prometheus metrics receiver port.
+      - 3100 # Loki log collector port.
+      - 3200 # The Tempo main API port.
+
+      # Telemetry and traces, spans collector ports by protocol:
+      - 4318 # Tempo OTLP/HTTP port
+      - 4317 # Tempo OTLP/gRPC port
+      - 9411 # Tempo Zipkin/HTTP port
+      - 14250 # Tempo Jaeger/gRPC port
+      - 14268 # Tempo Jaeger/HTTP port
+      - 6831 # Tempo Jaeger/Compact (UDP) port
+      - 55678 # Tempo OpenCensus port
+
+

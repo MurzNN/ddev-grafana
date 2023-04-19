@@ -16,13 +16,13 @@ services:
       - ./grafana/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/grafana/dashboards-provisioning:/etc/grafana/provisioning/dashboards
       - ./grafana/grafana/dashboards:/var/lib/grafana/dashboards
-    networks: [default, ddev_default]
     expose:
-      - 3000
+      - 3001 # Grafana web interface via HTTP.
+      - 3000 # Grafana web interface via HTTPS.
     environment:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
-      - HTTP_EXPOSE=3000:3000
-      - HTTPS_EXPOSE=3001:3000
+      - HTTP_EXPOSE=3001:3000 # Grafana web interface via HTTP.
+      - HTTPS_EXPOSE=3000:3000 # Grafana web interface with HTTPS.
 
   prometheus:
     container_name: "ddev-${DDEV_SITENAME}-prometheus"
@@ -33,22 +33,31 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-    networks: [default, ddev_default]
-    expose:
-      - 9090
     volumes:
       - ./grafana/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - prometheus-data:/prometheus
+    depends_on:
+      - web
+    # Using this trick to get port available at the localhost host in the
+    # web container. You can disable it to have a separate network.
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+    # expose:
+    #   - 9090
+
 
   loki:
     image: grafana/loki:latest
     container_name: "ddev-${DDEV_SITENAME}-loki"
-    networks: [default, ddev_default]
-    expose:
-      - 3100
     volumes:
       - ./grafana/loki/loki.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
+    depends_on:
+      - web
+    # Using this trick to get port available at the localhost host in the
+    # web container. You can disable it to have a separate network.
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+    # expose:
+    #   - 3100
 
   tempo:
     container_name: "ddev-${DDEV_SITENAME}-tempo"
@@ -58,11 +67,20 @@ services:
       - tempo-data:/data
     command:
       - "-config.file=/etc/tempo.yaml"
-    networks: [default, ddev_default]
-    expose:
-      - 3200
-      - 4317
-      - 4318
+    depends_on:
+      - web
+    # Using this trick to get port available at the localhost host in the
+    # web container. You can disable it to have a separate network.
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+    # expose:
+    #   - 3200 # The Tempo main API port.
+    #   - 4318 # Tempo OTLP/HTTP port
+    #   - 4317 # Tempo OTLP/gRPC port
+    #   - 9411 # Tempo Zipkin/HTTP port
+    #   - 14250 # Tempo Jaeger/gRPC port
+    #   - 14268 # Tempo Jaeger/HTTP port
+    #   - 6831 # Tempo Jaeger/Compact (UDP) port
+    #   - 55678 # Tempo OpenCensus port
 
 volumes:
   tempo-data:
@@ -71,3 +89,4 @@ volumes:
     name: "ddev-${DDEV_SITENAME}_prometheus"
   loki-data:
     name: "ddev-${DDEV_SITENAME}_loki"
+

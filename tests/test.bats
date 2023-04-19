@@ -12,12 +12,22 @@ setup() {
 }
 
 health_checks() {
+  # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
+
+  # Loki service
   ddev exec "curl -s http://loki:3100/ready"
+  ddev exec "curl -s http://localhost:3100/ready"
+
+  # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"
+  ddev exec "curl -s http://localhost:9090/-/ready"
+
+  # Tempo service
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s http://tempo:3200/status/version"
+  ddev exec "curl -s http://localhost:3200/status/version"
 }
 
 teardown() {

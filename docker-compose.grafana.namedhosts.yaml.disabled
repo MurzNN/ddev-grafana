@@ -1,0 +1,21 @@
+version: '3.6'
+
+services:
+  prometheus:
+    expose:
+      - 9090
+
+  loki:
+    expose:
+      - 3100
+
+  tempo:
+    expose:
+      - 3200 # The Tempo main API port.
+      - 4318 # Tempo OTLP/HTTP port
+      - 4317 # Tempo OTLP/gRPC port
+      - 9411 # Tempo Zipkin/HTTP port
+      - 14250 # Tempo Jaeger/gRPC port
+      - 14268 # Tempo Jaeger/HTTP port
+      - 6831 # Tempo Jaeger/Compact (UDP) port
+      - 55678 # Tempo OpenCensus port

@@ -38,12 +38,9 @@ services:
       - prometheus-data:/prometheus
     depends_on:
       - web
-    # Using this trick to get port available at the localhost host in the
-    # web container. You can disable it to have a separate network.
-    network_mode: container:ddev-${DDEV_SITENAME}-web
-    # expose:
-    #   - 9090
-
+    # exposed ports or network mode will be configured via separate files:
+    # - docker-compose.grafana.localhost.yaml
+    # - docker-compose.grafana.namedhosts.yaml
 
   loki:
     image: grafana/loki:latest
@@ -53,11 +50,9 @@ services:
       - loki-data:/loki
     depends_on:
       - web
-    # Using this trick to get port available at the localhost host in the
-    # web container. You can disable it to have a separate network.
-    network_mode: container:ddev-${DDEV_SITENAME}-web
-    # expose:
-    #   - 3100
+    # exposed ports or network mode will be configured via separate files:
+    # - docker-compose.grafana.localhost.yaml
+    # - docker-compose.grafana.namedhosts.yaml
 
   tempo:
     container_name: "ddev-${DDEV_SITENAME}-tempo"
@@ -69,18 +64,9 @@ services:
       - "-config.file=/etc/tempo.yaml"
     depends_on:
       - web
-    # Using this trick to get port available at the localhost host in the
-    # web container. You can disable it to have a separate network.
-    network_mode: container:ddev-${DDEV_SITENAME}-web
-    # expose:
-    #   - 3200 # The Tempo main API port.
-    #   - 4318 # Tempo OTLP/HTTP port
-    #   - 4317 # Tempo OTLP/gRPC port
-    #   - 9411 # Tempo Zipkin/HTTP port
-    #   - 14250 # Tempo Jaeger/gRPC port
-    #   - 14268 # Tempo Jaeger/HTTP port
-    #   - 6831 # Tempo Jaeger/Compact (UDP) port
-    #   - 55678 # Tempo OpenCensus port
+    # exposed ports or network mode will be configured via separate files:
+    # - docker-compose.grafana.localhost.yaml
+    # - docker-compose.grafana.namedhosts.yaml
 
 volumes:
   tempo-data:

@@ -1,0 +1,34 @@
+# Use this config to bind all services to the localhost of the web container.
+
+version: '3.6'
+
+services:
+  prometheus:
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+
+  loki:
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+
+  tempo:
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+
+  web:
+    ports:
+      - 8080 # A frontend app port.
+      - 9090 # Prometheus metrics receiver port.
+      - 3100 # Loki log collector port.
+      - 3200 # The Tempo main API port.
+
+      # Telemetry and traces, spans collector ports by protocol:
+      - 4318 # Tempo OTLP/HTTP port
+      - 4317 # Tempo OTLP/gRPC port
+      - 9411 # Tempo Zipkin/HTTP port
+      - 14250 # Tempo Jaeger/gRPC port
+      - 14268 # Tempo Jaeger/HTTP port
+      - 6831 # Tempo Jaeger/Compact (UDP) port
+      - 55678 # Tempo OpenCensus port
+
+    extra_hosts:
+      - "prometheus:127.0.0.1"
+      - "loki:127.0.0.1"
+      - "tempo:127.0.0.1"

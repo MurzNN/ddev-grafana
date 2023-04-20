@@ -7,6 +7,5 @@ project_files:
   - docker-compose.grafana.host-ports.yaml.disabled
   - docker-compose.grafana.localhost.yaml
   - docker-compose.grafana.namedhosts.yaml.disabled
-  - docker-compose.grafana.web-ports.yaml
   - grafana/
   - nginx/cors.conf

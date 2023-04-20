@@ -19,6 +19,7 @@ health_checks() {
   # Loki takes 15+ secs to initialize, so use the http://tempo:loki/ready url
   # is not a good idea, just checking the metrics endpoint.
   ddev exec "curl -v http://loki:3100/metrics"
+  ddev exec "curl -s http://localhost:9090/-/ready"
   ddev exec "curl -v http://localhost:3100/metrics"
 
   # Prometeus service

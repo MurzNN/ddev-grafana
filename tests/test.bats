@@ -12,16 +12,14 @@ setup() {
 }
 
 health_checks() {
-  # A workaround for the error:
-  # Ingester not ready: waiting for 15s after being ready
-  sleep 15
-
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
 
   # Loki service
-  ddev exec "curl -s http://loki:3100/ready"
-  ddev exec "curl -s http://localhost:3100/ready"
+  # Loki takes 15+ secs to initialize, so use the http://tempo:loki/ready url
+  # is not a good idea, just checking the metrics endpoint.
+  ddev exec "curl -s http://loki:3100/metrics"
+  ddev exec "curl -s http://localhost:3100/metrics"
 
   # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"

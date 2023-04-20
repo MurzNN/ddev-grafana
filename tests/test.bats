@@ -12,6 +12,10 @@ setup() {
 }
 
 health_checks() {
+  # A workaround for the error:
+  # Ingester not ready: waiting for 15s after being ready
+  sleep 15
+
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
 

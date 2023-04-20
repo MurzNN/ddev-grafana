@@ -4,6 +4,7 @@ services:
   grafana:
     container_name: "ddev-${DDEV_SITENAME}-grafana"
     image: grafana/grafana:latest
+    user: "${UID}:${GID}"
     entrypoint:
       - /usr/share/grafana/bin/grafana-server
       - --homepath=/usr/share/grafana
@@ -27,6 +28,7 @@ services:
   prometheus:
     container_name: "ddev-${DDEV_SITENAME}-prometheus"
     image: prom/prometheus:latest
+    user: "${UID}:${GID}"
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
@@ -44,6 +46,7 @@ services:
 
   loki:
     image: grafana/loki:latest
+    user: "${UID}:${GID}"
     container_name: "ddev-${DDEV_SITENAME}-loki"
     volumes:
       - ./grafana/loki/loki.yaml:/etc/loki/local-config.yaml
@@ -57,6 +60,7 @@ services:
   tempo:
     container_name: "ddev-${DDEV_SITENAME}-tempo"
     image: grafana/tempo:latest
+    user: "${UID}:${GID}"
     volumes:
       - ./grafana/tempo/tempo.yaml:/etc/tempo.yaml
       - tempo-data:/data

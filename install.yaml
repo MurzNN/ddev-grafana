@@ -8,4 +8,4 @@ project_files:
   - docker-compose.grafana.localhost.yaml
   - docker-compose.grafana.namedhosts.yaml.disabled
   - grafana/
-  - nginx/cors.conf
+  - nginx/grafana-cors-allow-all.conf

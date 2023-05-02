@@ -19,23 +19,23 @@ health_checks() {
   # Loki takes 15+ secs to initialize, so use the http://tempo:loki/ready url
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s http://loki:3100/services"
-  # localhost port don't work in test environment for some reason, so keeping
-  # it disabled for now.
-  # ddev exec "curl -s http://localhost:3100/services"
+  # The localhost port doesn't work in test environment with GitHub runners for
+  # some reason but works well locally, so keeping it disabled for now.
+  ddev exec "curl -s http://localhost:3100/services"
 
   # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"
-  # localhost port don't work in test environment for some reason, so keeping
-  # it disabled for now.
-  # ddev exec "curl -s http://localhost:9090/-/ready"
+  # The localhost port doesn't work in test environment with GitHub runners for
+  # some reason but works well locally, so keeping it disabled for now.
+  ddev exec "curl -s http://localhost:9090/-/ready"
 
   # Tempo service
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s http://tempo:3200/status/version"
-  # localhost port don't work in test environment for some reason, so keeping
-  # it disabled for now.
-  # ddev exec "curl -s http://localhost:3200/status/version"
+  # The localhost port doesn't work in test environment with GitHub runners for
+  # some reason but works well locally, so keeping it disabled for now.
+  ddev exec "curl -s http://localhost:3200/status/version"
 }
 
 teardown() {

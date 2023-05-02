@@ -32,3 +32,12 @@ services:
       - "prometheus:127.0.0.1"
       - "loki:127.0.0.1"
       - "tempo:127.0.0.1"
+
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      # Expose HTTP tracing endpoints to the ddev host. Only HTTP endoinds
+      # supported via this approach.
+      - HTTP_EXPOSE=4318:4318,9411:9411,14268:14268

@@ -40,5 +40,5 @@ services:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       # Expose HTTP tracing endpoints to the ddev host. Only HTTP endoinds
       # supported via this approach.
-      - HTTP_EXPOSE=4318:4318
+      - HTTP_EXPOSE=9411:9411
       # - HTTP_EXPOSE=4318:4318,9411:9411,14268:14268

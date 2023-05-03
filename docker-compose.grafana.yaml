@@ -17,9 +17,6 @@ services:
       - ./grafana/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/grafana/dashboards-provisioning:/etc/grafana/provisioning/dashboards
       - ./grafana/grafana/dashboards:/var/lib/grafana/dashboards
-    expose:
-      - 3001 # Grafana web interface via HTTP.
-      - 3000 # Grafana web interface via HTTPS.
     environment:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=3001:3000 # Grafana web interface via HTTP.

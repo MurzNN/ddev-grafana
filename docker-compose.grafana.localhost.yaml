@@ -40,5 +40,5 @@ services:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       # Expose HTTP tracing endpoints to the ddev host. Only HTTP endoinds
       # supported via this approach.
-      - HTTP_EXPOSE=80:80,443:443,4318:4318,9411:9411,14268:14268
+      - HTTP_EXPOSE=${DDEV_ROUTER_HTTP_PORT}:80,${DDEV_MAILHOG_PORT}:8025,4318:4318,9411:9411,14268:14268
       # - HTTP_EXPOSE=4318:4318,9411:9411,14268:14268

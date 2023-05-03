@@ -39,6 +39,7 @@ health_checks() {
 }
 
 teardown() {
+  docker logs ddev-router
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   ddev delete -Oy ${PROJNAME} >/dev/null 2>&1

@@ -17,8 +17,11 @@ health_checks() {
 
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
-  curl -s http://${PROJNAME}.ddev.site:3001/api/health
-  curl -s https://${PROJNAME}.ddev.site:3000/api/health
+  echo "1111"
+  curl -I http://${PROJNAME}.ddev.site:3001/api/health
+  echo "222"
+  curl -I https://${PROJNAME}.ddev.site:3000/api/health
+  echo "333"
 
   # Loki service
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url

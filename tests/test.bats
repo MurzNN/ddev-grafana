@@ -12,10 +12,13 @@ setup() {
 }
 
 health_checks() {
+  # Wait for services to start up.
+  sleep 30
+
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
-  ddev exec "curl -s http://${PROJNAME}.ddev.site:3001/api/health"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:3000/api/health"
+  curl -s http://${PROJNAME}.ddev.site:3001/api/health
+  curl -s https://${PROJNAME}.ddev.site:3000/api/health
 
   # Loki service
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
@@ -24,15 +27,13 @@ health_checks() {
   echo "Step 1"
   curl -I https://${PROJNAME}.ddev.site:3100/services
   echo "Step 2"
-  # The localhost port doesn't work in test environment with GitHub runners for
-  # some reason but works well locally, so keeping it disabled for now.
+  # # This check fails in GitHub, but works well locally, keeping commented.
   # ddev exec "curl -s http://localhost:3100/services"
 
   # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"
   ddev exec "curl -s https://${PROJNAME}.ddev.site:9090/-/ready"
-  # The localhost port doesn't work in test environment with GitHub runners for
-  # some reason but works well locally, so keeping it disabled for now.
+  # # This check fails in GitHub, but works well locally, keeping commented.
   # ddev exec "curl -s http://localhost:9090/-/ready"
 
   # Tempo service
@@ -40,8 +41,7 @@ health_checks() {
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s http://tempo:3200/status/version"
   ddev exec "curl -s https://${PROJNAME}.ddev.site:3200/status/version"
-  # The localhost port doesn't work in test environment with GitHub runners for
-  # some reason but works well locally, so keeping it disabled for now.
+  # # This check fails in GitHub, but works well locally, keeping commented.
   # ddev exec "curl -s http://localhost:3200/status/version"
 
   # Tempo HTTP receivers ports

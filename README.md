@@ -28,6 +28,15 @@ It contains several components from Grafana stack:
 - **[Tempo](https://grafana.com/traces/)**: an open source, easy-to-use, and
   high-scale distributed tracing backend.
 
+Be aware that this addon uses a lot of port mapping, so port numbers may overlap
+with another running ddev project or local apps, that can lead to startup
+errors, and even hidden errors with "503: No ddev back-end site available" if
+the same port is configured with HTTP on one project and HTTPS on another, here
+is the issue about this: https://github.com/ddev/ddev/issues/4794
+
+To resolve such issues try to find the conflicting port and comment it or change
+the port number to a free one.
+
 ## Installation
 
 1. In the DDEV project directory launch the command:
@@ -59,7 +68,12 @@ files:
 - `docker-compose.grafana.namedhosts.yaml.disabled` to
   `docker-compose.grafana.namedhosts.yaml`
 
-**Contributed and maintained by [@MurzNN](https://github.com/MurzNN).
+
+If you need to expose non-HTTP ports (gRPC, etc), you can uncomment them in the
+`docker-compose.grafana.localhost.yaml` file.
+
+
+** Contributed and maintained by [@MurzNN](https://github.com/MurzNN).
 
 ## Extra
 

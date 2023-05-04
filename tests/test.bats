@@ -13,18 +13,24 @@ setup() {
 
 health_checks() {
   # Grafana service
-  # ddev exec "curl -s http://grafana:3000/api/health"
+  ddev exec "curl -s http://grafana:3000/api/health"
+  ddev exec "curl -s http://${PROJNAME}.ddev.site:3001/api/health"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:3000/api/health"
 
   # Loki service
-  # Loki takes 15+ secs to initialize, so use the http://tempo:loki/ready url
+  # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s http://loki:3100/services"
+  echo "Step 1"
+  ddev exec "curl -I https://${PROJNAME}.ddev.site:3100/services"
+  echo "Step 2"
   # The localhost port doesn't work in test environment with GitHub runners for
   # some reason but works well locally, so keeping it disabled for now.
   # ddev exec "curl -s http://localhost:3100/services"
 
   # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:9090/-/ready"
   # The localhost port doesn't work in test environment with GitHub runners for
   # some reason but works well locally, so keeping it disabled for now.
   # ddev exec "curl -s http://localhost:9090/-/ready"
@@ -33,9 +39,19 @@ health_checks() {
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s http://tempo:3200/status/version"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:3200/status/version"
   # The localhost port doesn't work in test environment with GitHub runners for
   # some reason but works well locally, so keeping it disabled for now.
   # ddev exec "curl -s http://localhost:3200/status/version"
+
+  # Tempo HTTP receivers ports
+  ddev exec "curl -s http://tempo:4318/"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:4318/"
+  ddev exec "curl -s http://tempo:9411/"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:9411/"
+  ddev exec "curl -s http://tempo:14268/"
+  ddev exec "curl -s https://${PROJNAME}.ddev.site:14268/"
+
 }
 
 teardown() {

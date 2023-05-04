@@ -11,7 +11,7 @@ services:
       - --config=/etc/grafana-config/grafana.ini
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: $DDEV_APPROOT
+      com.ddev.approot: ${DDEV_APPROOT}
     volumes:
       - ./grafana/grafana/config:/etc/grafana-config
       - ./grafana/grafana/datasources:/etc/grafana/provisioning/datasources

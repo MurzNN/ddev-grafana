@@ -22,7 +22,7 @@ health_checks() {
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s http://loki:3100/services"
   echo "Step 1"
-  ddev exec "curl -I https://${PROJNAME}.ddev.site:3100/services"
+  curl -I https://${PROJNAME}.ddev.site:3100/services
   echo "Step 2"
   # The localhost port doesn't work in test environment with GitHub runners for
   # some reason but works well locally, so keeping it disabled for now.

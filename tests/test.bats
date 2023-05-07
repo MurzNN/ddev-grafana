@@ -14,6 +14,7 @@ setup() {
 health_checks() {
   # Wait for services to start up.
   sleep 30
+  printenv
 
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"

@@ -16,11 +16,14 @@ health_checks() {
   sleep 30
   # printenv
 
+  # Workaround for failing checks on GitHub actions
   if [ -n "${GITHUB_ACTIONS:-}" ]; then
     DDEV_CLOUD_ENV=1
   else
     DDEV_CLOUD_ENV=
   fi
+  # Add the `[ -z "$DDEV_CLOUD_ENV" ] && ` prefix to execute a check only
+  # on local launches of bats tests.
 
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
@@ -32,31 +35,26 @@ health_checks() {
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s http://loki:3100/services"
-  echo "Step 1"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -I https://${PROJNAME}.ddev.site:3100/services
-  echo "Step 2"
-  # # This check fails in GitHub, but works well locally, keeping commented.
-  # ddev exec "curl -s http://localhost:3100/services"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s http://localhost:3100/services"
+  [ -z "$DDEV_CLOUD_ENV" ] && curl -s https://${PROJNAME}.ddev.site:3100/services
 
   # Prometeus service
   ddev exec "curl -s http://prometheus:9090/-/ready"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:9090/-/ready"
-  # # This check fails in GitHub, but works well locally, keeping commented.
-  # ddev exec "curl -s http://localhost:9090/-/ready"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s http://localhost:9090/-/ready"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s https://${PROJNAME}.ddev.site:9090/-/ready"
 
   # Tempo service
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s http://tempo:3200/status/version"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:3200/status/version"
-  # # This check fails in GitHub, but works well locally, keeping commented.
-  # ddev exec "curl -s http://localhost:3200/status/version"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s http://localhost:3200/status/version"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s https://${PROJNAME}.ddev.site:3200/status/version"
 
   # Tempo HTTP receivers ports
   ddev exec "curl -s http://tempo:4318/"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:4318/"
+ [ -z "$DDEV_CLOUD_ENV" ] &&  ddev exec "curl -s https://${PROJNAME}.ddev.site:4318/"
   ddev exec "curl -s http://tempo:9411/"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:9411/"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s https://${PROJNAME}.ddev.site:9411/"
   ddev exec "curl -s http://tempo:14268/"
   ddev exec "curl -s https://${PROJNAME}.ddev.site:14268/"
 

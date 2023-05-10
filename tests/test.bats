@@ -52,12 +52,15 @@ health_checks() {
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s https://${PROJNAME}.ddev.site:3200/status/version
 
   echo "Checking Tempo HTTP receivers ports"
+  echo 4318
   ddev exec "curl -s http://tempo:4318/"
   [ -z "$DDEV_CLOUD_ENV" ] &&  ddev exec "curl -s http://localhost:4318/"
   [ -z "$DDEV_CLOUD_ENV" ] &&  curl -s https://${PROJNAME}.ddev.site:4318/
+  echo 9411
   ddev exec "curl -s http://tempo:9411/"
   [ -z "$DDEV_CLOUD_ENV" ] &&  ddev exec "curl -s http://localhost:9411/"
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s https://${PROJNAME}.ddev.site:9411/
+  echo 14268
   ddev exec "curl -s http://tempo:14268/"
   [ -z "$DDEV_CLOUD_ENV" ] &&  ddev exec "curl -s http://localhost:14268/"
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s https://${PROJNAME}.ddev.site:14268/

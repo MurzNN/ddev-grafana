@@ -61,7 +61,11 @@ health_checks() {
   [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:9411/"
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:9411/
   echo 14268
+  echo 1
   ddev exec "curl -s -o /dev/null http://tempo:14268/"
+  echo 2
+  ddev exec "curl -I http://tempo:14268/"
+  echo 3
   [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:14268/"
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:14268/
 }

@@ -13,8 +13,8 @@ setup() {
 
 health_checks() {
   # Wait for services to start up.
-  #sleep 30
-  printenv
+  sleep 30
+  # printenv
 
   if [ -n "${GITHUB_ACTIONS:-}" ]; then
     DDEV_CLOUD_ENV=1
@@ -22,17 +22,11 @@ health_checks() {
     DDEV_CLOUD_ENV=0
   fi
 
-  echo "CLOUD ENV!!!!!!!!! $DDEV_CLOUD_ENV xx"
-  curl http://asdasdasdasda/
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
-  echo "1111"
-  curl -I http://${PROJNAME}.ddev.site:3001/api/health
-  echo "222"
-  curl -I https://${PROJNAME}.ddev.site/
-  echo "333"
-  curl -I https://${PROJNAME}.ddev.site:3000/api/health
-  echo "444"
+  curl -s http://${PROJNAME}.ddev.site:3001/api/health
+  curl -s https://${PROJNAME}.ddev.site/
+  curl -s https://${PROJNAME}.ddev.site:3000/api/health
 
   # Loki service
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url

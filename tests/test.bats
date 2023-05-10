@@ -13,9 +13,17 @@ setup() {
 
 health_checks() {
   # Wait for services to start up.
-  sleep 30
+  #sleep 30
   printenv
 
+  if [ -n "${GITHUB_ACTIONS:-}" ]; then
+    DDEV_CLOUD_ENV=1
+  else
+    DDEV_CLOUD_ENV=0
+  fi
+
+  echo "CLOUD ENV!!!!!!!!! $DDEV_CLOUD_ENV xx"
+  curl http://asdasdasdasda/
   # Grafana service
   ddev exec "curl -s http://grafana:3000/api/health"
   echo "1111"

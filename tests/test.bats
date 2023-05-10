@@ -19,7 +19,7 @@ health_checks() {
   if [ -n "${GITHUB_ACTIONS:-}" ]; then
     DDEV_CLOUD_ENV=1
   else
-    DDEV_CLOUD_ENV=0
+    DDEV_CLOUD_ENV=
   fi
 
   # Grafana service
@@ -33,7 +33,7 @@ health_checks() {
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s http://loki:3100/services"
   echo "Step 1"
-  curl -I https://${PROJNAME}.ddev.site:3100/services
+  [ -z "$DDEV_CLOUD_ENV" ] && curl -I https://${PROJNAME}.ddev.site:3100/services
   echo "Step 2"
   # # This check fails in GitHub, but works well locally, keeping commented.
   # ddev exec "curl -s http://localhost:3100/services"

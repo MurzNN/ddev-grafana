@@ -56,7 +56,7 @@ health_checks() {
   ddev exec "curl -s http://tempo:9411/"
   [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s https://${PROJNAME}.ddev.site:9411/"
   ddev exec "curl -s http://tempo:14268/"
-  ddev exec "curl -s https://${PROJNAME}.ddev.site:14268/"
+  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s https://${PROJNAME}.ddev.site:14268/"
 
 }
 

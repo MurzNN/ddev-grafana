@@ -1,0 +1,26 @@
+logs:
+  configs:
+    - name: default
+      clients:
+        - url: http://loki:3100/loki/api/v1/push
+      positions:
+        filename: /tmp/positions.yaml
+      scrape_configs:
+        - job_name: system
+          static_configs:
+            - targets: [localhost]
+              labels:
+                job: syslog
+                __path__: /var/log/syslog
+        - job_name: nginx
+          static_configs:
+            - targets: [localhost]
+              labels:
+                job: nginx
+                __path__: /var/log/nginx/*.log
+        - job_name: apache
+          static_configs:
+            - targets: [localhost]
+              labels:
+                job: apache
+                __path__: /var/log/apache2/*.log

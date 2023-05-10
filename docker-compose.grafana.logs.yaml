@@ -1,0 +1,29 @@
+# Use this config to bind all services to the localhost of the web container.
+
+services:
+  web:
+    volumes:
+      - type: bind
+        source: ./grafana/syslog/syslog.grafana.conf
+        target: /etc/syslog-ng/conf.d/syslog.grafana.conf
+      - web-logs-data:/var/log
+
+  agent:
+    container_name: "ddev-${DDEV_SITENAME}-agent"
+    image: grafana/agent:latest
+    user: "${UID}:${GID}"
+    volumes:
+      - type: bind
+        source: ./grafana/agent/agent.yaml
+        target: /etc/agent/agent.yaml
+      - web-logs-data:/var/log
+    depends_on:
+      - web
+    links:
+      - "web:prometheus"
+      - "web:loki"
+      - "web:tempo"
+
+volumes:
+  web-logs-data:
+    name: "ddev-${DDEV_SITENAME}_web-logs"

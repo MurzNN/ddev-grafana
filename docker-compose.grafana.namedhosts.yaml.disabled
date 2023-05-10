@@ -1,7 +1,5 @@
 # Use this config to use separate networks for each Grafana service.
 
-version: '3.6'
-
 services:
   prometheus:
     expose:

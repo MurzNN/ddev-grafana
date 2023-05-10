@@ -1,7 +1,5 @@
 # Use this config to bind all services to the localhost of the web container.
 
-version: '3.6'
-
 services:
   prometheus:
     network_mode: container:ddev-${DDEV_SITENAME}-web

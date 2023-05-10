@@ -3,6 +3,9 @@ name: grafana
 pre_install_actions:
 
 project_files:
+  - .gitignore
+  - config.grafana.yaml
+  - config.grafana.logs.yaml
   - docker-compose.grafana.yaml
   - docker-compose.grafana.host-ports.yaml.disabled
   - docker-compose.grafana.localhost.yaml

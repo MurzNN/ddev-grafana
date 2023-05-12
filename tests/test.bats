@@ -36,20 +36,14 @@ health_checks() {
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s -o /dev/null http://loki:3100/services"
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:3100/services"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:3100/services
 
   echo "Checking Prometeus service"
   ddev exec "curl -s -o /dev/null http://prometheus:9090/-/ready"
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:9090/-/ready"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:9090/-/ready
 
   echo "Checking Tempo service"
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
   # is not a good idea, just checking the version endpoint.
   ddev exec "curl -s -o /dev/null http://tempo:3200/status/version"
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:3200/status/version"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:3200/status/version
 
   echo "Checking Tempo HTTP receivers ports"
   echo 4318
@@ -71,6 +65,7 @@ health_checks() {
 }
 
 teardown() {
+  ddev logs
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   ddev delete -Oy ${PROJNAME} >/dev/null 2>&1

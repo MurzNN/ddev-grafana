@@ -1,0 +1,22 @@
+services:
+  prometheus:
+    container_name: "ddev-${DDEV_SITENAME}-prometheus"
+    image: prom/prometheus:latest
+    user: "${UID:-}:${GID:-}"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+      - type: bind
+        source: ./grafana/prometheus/prometheus.yaml
+        target: /etc/prometheus/prometheus.yaml
+      - prometheus-data:/prometheus
+    # Scraping metrics for web services can be configured in the file
+    # grafana/prometheus/prometheus.yaml
+
+volumes:
+  prometheus-data:
+    name: "ddev-${DDEV_SITENAME}_prometheus"

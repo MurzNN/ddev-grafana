@@ -1,0 +1,44 @@
+services:
+  web:
+    # Comment this if you don't need to bind trace ports to localhost.
+    extra_hosts:
+      - "tempo:127.0.0.1"
+
+  tempo:
+    container_name: "ddev-${DDEV_SITENAME}-tempo"
+    image: grafana/tempo:latest
+    # Comment this if you don't need to bind trace ports to localhost.
+    network_mode: container:ddev-${DDEV_SITENAME}-web
+    user: "${UID:-}:${GID:-}"
+    volumes:
+      - type: bind
+        source: ./grafana/tempo/tempo.yaml
+        target: /etc/tempo.yaml
+      - tempo-data:/data
+    command:
+      - "-config.file=/etc/tempo.yaml"
+    depends_on:
+      - web
+    # exposed ports is configured in a separate file:
+    # config.grafana.tracing.yaml
+
+    # # Another approach to expose HTTP tracing endpoints to the ddev host.
+    # # Only HTTP endoinds supported via this approach.
+    # labels:
+    #   com.ddev.site-name: ${DDEV_SITENAME}
+    #   com.ddev.approot: $DDEV_APPROOT
+    # environment:
+    #   - VIRTUAL_HOST=$DDEV_HOSTNAME
+    #   # We need also to pass DDEV default ports here via adding the substring:
+    #   # ${DDEV_ROUTER_HTTP_PORT}:80,${DDEV_MAILHOG_PORT}
+    #   - HTTP_EXPOSE=${DDEV_ROUTER_HTTP_PORT}:80,${DDEV_MAILHOG_PORT}:8025,4318:4318,9411:9411,14268:14268
+
+  grafana:
+    # Required to connect from Grafana container via named hosts.
+    # Comment this if you don't need to bind trace ports to localhost.
+    links:
+      - "web:tempo"
+
+volumes:
+  tempo-data:
+    name: "ddev-${DDEV_SITENAME}_tempo"

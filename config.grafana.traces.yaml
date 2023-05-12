@@ -1,0 +1,18 @@
+web_extra_exposed_ports:
+  # Tempo OTLP/HTTP port
+  - name: tempo-otlp
+    container_port: 4318
+    http_port: 54318 # HTTP port is not really needed, but it's mandatory.
+    https_port: 4318
+
+  # Tempo Zipkin/HTTP port
+  - name: tempo-zipkin
+    container_port: 9411
+    http_port: 59411 # HTTP port is not really needed, but it's mandatory.
+    https_port: 9411
+
+  # Tempo Jaeger/HTTP port
+  - name: tempo-jaeger
+    container_port: 14268
+    http_port: 64268 # HTTP port is not really needed, but it's mandatory.
+    https_port: 14268

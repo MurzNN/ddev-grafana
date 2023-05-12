@@ -62,6 +62,7 @@ health_checks() {
   echo 3
   [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:14268/"
   [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:14268/
+  echo "Fin"
 }
 
 teardown() {

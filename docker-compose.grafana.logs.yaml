@@ -7,6 +7,10 @@ services:
       - web-logs-data:/var/log
 
     command: 'bash /syslog-startup.sh'
+    healthcheck:
+        # We need to increase the timeout because of installing syslog-ng
+        # package.
+        timeout: 5m0s
 
   loki:
     image: grafana/loki:latest

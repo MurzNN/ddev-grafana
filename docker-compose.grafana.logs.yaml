@@ -1,22 +1,10 @@
 services:
   web:
     volumes:
-      - type: bind
-        source: ./grafana/syslog-ng/syslog-ng.grafana.conf
-        target: /etc/syslog-ng/conf.d/syslog-ng.grafana.conf
-      # - type: bind
-      #   source: ./grafana/syslog-ng/fix-log-directory-permissions.sh
-      #   target: /mnt/ddev_config/web-entrypoint.d/fix-log-directory-permissions.sh
-      - type: bind
-        source: ./grafana/syslog-ng/syslog-startup.sh
-        target: /syslog-startup.sh
+      # Permissions of this volume are enforced by the
+      # web-entrypoint.d/ddev-grafana-fix-log-directory-permissions.sh file
+      # because supervisord requires write permission for the current user.
       - web-logs-data:/var/log
-
-    # command: 'bash /syslog-startup.sh'
-    healthcheck:
-        # We need to increase the timeout because of installing syslog-ng
-        # package.
-        timeout: 5m0s
 
   loki:
     image: grafana/loki:latest

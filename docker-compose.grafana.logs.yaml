@@ -5,6 +5,9 @@ services:
         source: ./grafana/syslog-ng/syslog-ng.grafana.conf
         target: /etc/syslog-ng/conf.d/syslog-ng.grafana.conf
       - type: bind
+        source: ./grafana/syslog-ng/fix-log-directory-permissions.sh
+        target: /mnt/ddev_config/web-entrypoint.d/fix-log-directory-permissions.sh
+      - type: bind
         source: ./grafana/syslog-ng/syslog-startup.sh
         target: /syslog-startup.sh
       - web-logs-data:/var/log

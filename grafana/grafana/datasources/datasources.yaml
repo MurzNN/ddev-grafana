@@ -12,6 +12,12 @@ datasources:
     editable: false
     apiVersion: 1
     uid: loki
+    jsonData:
+      derivedFields:
+        - datasourceUid: Tempo
+          matcherRegex: "trace_id=\"(\\w+)\""
+          name: trace_id
+          url: "$${__value.raw}"
 
   - name: Prometheus
     type: prometheus
@@ -36,3 +42,23 @@ datasources:
     editable: false
     apiVersion: 1
     uid: tempo
+    jsonData:
+      tracesToLogsV2:
+        # Field with an internal link pointing to a logs data source in Grafana.
+        # datasourceUid value must match the uid value of the logs data source.
+        datasourceUid: "loki"
+        spanStartTimeShift: "1h"
+        spanEndTimeShift: "-1h"
+        filterByTraceID: false
+        filterBySpanID: false
+        customQuery: true
+        query: '{job="syslog"} | logfmt | trace_id="$${__span.traceId}"'
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false
+      lokiSearch:
+        datasourceUid: "loki"
+      spanBar:
+        type: "Tag"
+        tag: "http.path"

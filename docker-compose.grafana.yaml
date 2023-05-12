@@ -1,79 +1,29 @@
-version: '3.6'
-
 services:
   grafana:
     container_name: "ddev-${DDEV_SITENAME}-grafana"
     image: grafana/grafana:latest
-    user: "${UID}:${GID}"
+    user: "${UID:-}:${GID:-}"
     entrypoint:
       - /usr/share/grafana/bin/grafana-server
       - --homepath=/usr/share/grafana
       - --config=/etc/grafana-config/grafana.ini
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: $DDEV_APPROOT
+      com.ddev.approot: ${DDEV_APPROOT}
     volumes:
-      - ./grafana/grafana/config:/etc/grafana-config
-      - ./grafana/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/grafana/dashboards-provisioning:/etc/grafana/provisioning/dashboards
-      - ./grafana/grafana/dashboards:/var/lib/grafana/dashboards
+      - type: bind
+        source: ./grafana/grafana/config
+        target: /etc/grafana-config
+      - type: bind
+        source: ./grafana/grafana/datasources
+        target: /etc/grafana/provisioning/datasources
+      - type: bind
+        source: ./grafana/grafana/dashboards-provisioning
+        target: /etc/grafana/provisioning/dashboards
+      - type: bind
+        source: ./grafana/grafana/dashboards
+        target: /var/lib/grafana/dashboards
     environment:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=3001:3000 # Grafana web interface via HTTP.
       - HTTPS_EXPOSE=3000:3000 # Grafana web interface with HTTPS.
-
-  prometheus:
-    container_name: "ddev-${DDEV_SITENAME}-prometheus"
-    image: prom/prometheus:latest
-    user: "${UID}:${GID}"
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yaml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    volumes:
-      - ./grafana/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - prometheus-data:/prometheus
-    depends_on:
-      - web
-    # exposed ports or network mode will be configured via separate files:
-    # - docker-compose.grafana.localhost.yaml
-    # - docker-compose.grafana.namedhosts.yaml
-
-  loki:
-    image: grafana/loki:latest
-    user: "${UID}:${GID}"
-    container_name: "ddev-${DDEV_SITENAME}-loki"
-    volumes:
-      - ./grafana/loki/loki.yaml:/etc/loki/local-config.yaml
-      - loki-data:/loki
-    depends_on:
-      - web
-    # exposed ports or network mode will be configured via separate files:
-    # - docker-compose.grafana.localhost.yaml
-    # - docker-compose.grafana.namedhosts.yaml
-
-  tempo:
-    container_name: "ddev-${DDEV_SITENAME}-tempo"
-    image: grafana/tempo:latest
-    user: "${UID}:${GID}"
-    volumes:
-      - ./grafana/tempo/tempo.yaml:/etc/tempo.yaml
-      - tempo-data:/data
-    command:
-      - "-config.file=/etc/tempo.yaml"
-    depends_on:
-      - web
-    # exposed ports or network mode will be configured via separate files:
-    # - docker-compose.grafana.localhost.yaml
-    # - docker-compose.grafana.namedhosts.yaml
-
-volumes:
-  tempo-data:
-    name: "ddev-${DDEV_SITENAME}_tempo"
-  prometheus-data:
-    name: "ddev-${DDEV_SITENAME}_prometheus"
-  loki-data:
-    name: "ddev-${DDEV_SITENAME}_loki"
-

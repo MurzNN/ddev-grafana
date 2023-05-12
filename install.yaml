@@ -3,9 +3,12 @@ name: grafana
 pre_install_actions:
 
 project_files:
+  - config.grafana.logs.yaml
+  - config.grafana.traces.yaml
+  - docker-compose.grafana.logs.yaml
+  - docker-compose.grafana.metrics.yaml
+  - docker-compose.grafana.traces.yaml
   - docker-compose.grafana.yaml
-  - docker-compose.grafana.host-ports.yaml.disabled
-  - docker-compose.grafana.localhost.yaml
-  - docker-compose.grafana.namedhosts.yaml.disabled
   - grafana/
   - nginx/grafana-cors-allow-all.conf
+  - web-entrypoint.d/

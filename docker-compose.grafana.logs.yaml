@@ -1,0 +1,36 @@
+services:
+  web:
+    volumes:
+      # Permissions of this volume are enforced by the
+      # web-entrypoint.d/ddev-grafana-fix-log-directory-permissions.sh file
+      # because supervisord requires write permission for the current user.
+      - web-logs-data:/var/log
+
+  loki:
+    image: grafana/loki:latest
+    user: "${UID:-}:${GID:-}"
+    container_name: "ddev-${DDEV_SITENAME}-loki"
+    volumes:
+      - type: bind
+        source: ./grafana/loki/loki.yaml
+        target: /etc/loki/local-config.yaml
+      - loki-data:/loki
+
+  agent:
+    container_name: "ddev-${DDEV_SITENAME}-agent"
+    image: grafana/agent:latest
+    user: "${UID:-}:${GID:-}"
+    volumes:
+      - type: bind
+        source: ./grafana/agent/agent.yaml
+        target: /etc/agent/agent.yaml
+      - web-logs-data:/var/log
+    # Additional configuration is in the separate file:
+    # config.grafana.logs.yaml
+
+volumes:
+  web-logs-data:
+    name: "ddev-${DDEV_SITENAME}_web-logs"
+  loki-data:
+    name: "ddev-${DDEV_SITENAME}_loki"
+

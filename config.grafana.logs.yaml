@@ -1,0 +1,7 @@
+webimage_extra_packages:
+  - syslog-ng
+
+web_extra_daemons:
+  - name: "syslog-ng"
+    command: "/usr/bin/sudo /usr/sbin/syslog-ng -F --no-caps"
+    directory: /var/www/html

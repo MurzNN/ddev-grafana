@@ -11,3 +11,4 @@ project_files:
   - docker-compose.grafana.yaml
   - grafana/
   - nginx/grafana-cors-allow-all.conf
+  - web-entrypoint.d/

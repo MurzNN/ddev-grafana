@@ -4,10 +4,11 @@ pre_install_actions:
 
 project_files:
   - config.grafana.logs.yaml
-  - config.grafana.traces.yaml
+  - config.grafana.traces.localhost.yaml
   - docker-compose.grafana.logs.yaml
   - docker-compose.grafana.metrics.yaml
-  - docker-compose.grafana.traces.yaml
+  - docker-compose.grafana.traces.localhost.yaml
+  - docker-compose.grafana.traces.network.disabled
   - docker-compose.grafana.yaml
   - grafana/
   - nginx/grafana-cors-allow-all.conf

@@ -1,0 +1,11 @@
+services:
+  tempo:
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    expose:
+      - "9999"
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=3200:53200,4318:54318,9411:59411,14268:64268
+      - HTTPS_EXPOSE=3200:3200,4318:4318,9411:9411,14268:14268

@@ -1,5 +1,11 @@
 web_extra_exposed_ports:
   # Tempo OTLP/HTTP port
+  - name: tempo
+    container_port: 3200
+    http_port: 53200 # HTTP port is not really needed, but it's mandatory.
+    https_port: 3200
+
+  # Tempo OTLP/HTTP port
   - name: tempo-otlp
     container_port: 4318
     http_port: 54318 # HTTP port is not really needed, but it's mandatory.

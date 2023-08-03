@@ -21,7 +21,7 @@ health_checks() {
   # To make a test run only on local machines,
   # add the `[ -z "$DDEV_CLOUD_ENV" ] && ` prefix to the command.
   if [ -n "${GITHUB_ACTIONS:-}" ]; then
-    DDEV_CLOUD_ENV=1
+    DDEV_CLOUD_ENV=
   else
     DDEV_CLOUD_ENV=
   fi
@@ -29,16 +29,20 @@ health_checks() {
 
   # Grafana service
   ddev exec "curl -s -o /dev/null http://grafana:3000/api/health"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:3001/api/health
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:3000/api/health
   curl -s -o /dev/null https://${PROJNAME}.ddev.site:3000/api/health
 
   echo "Checking Loki service"
   # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
   # is not a good idea, just checking the services endpoint.
   ddev exec "curl -s -o /dev/null http://loki:3100/services"
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:3100/
+  curl -s -o /dev/null https://${PROJNAME}.ddev.site:3100/
 
   echo "Checking Prometeus service"
   ddev exec "curl -s -o /dev/null http://prometheus:9090/-/ready"
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:9090/
+  curl -s -o /dev/null https://${PROJNAME}.ddev.site:9090/
 
   echo "Checking Tempo service"
   # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
@@ -46,23 +50,17 @@ health_checks() {
   ddev exec "curl -s -o /dev/null http://tempo:3200/status/version"
 
   echo "Checking Tempo HTTP receivers ports"
-  echo 4318
   ddev exec "curl -s -o /dev/null http://tempo:4318/"
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:4318/"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:4318/
-  echo 9411
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:4318/
+  curl -s -o /dev/null https://${PROJNAME}.ddev.site:4318/
+
   ddev exec "curl -s -o /dev/null http://tempo:9411/"
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:9411/"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:9411/
-  echo 14268
-  echo 1
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:9411/
+  curl -s -o /dev/null https://${PROJNAME}.ddev.site:9411/
+
   ddev exec "curl -s -o /dev/null http://tempo:14268/"
-  echo 2
-  ddev exec "curl -I http://tempo:14268/"
-  echo 3
-  [ -z "$DDEV_CLOUD_ENV" ] && ddev exec "curl -s -o /dev/null http://localhost:14268/"
-  [ -z "$DDEV_CLOUD_ENV" ] && curl -s -o /dev/null https://${PROJNAME}.ddev.site:14268/
-  echo "Fin"
+  curl -s -o /dev/null http://${PROJNAME}.ddev.site:14268/
+  curl -s -o /dev/null https://${PROJNAME}.ddev.site:14268/
 }
 
 teardown() {

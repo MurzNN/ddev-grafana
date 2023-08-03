@@ -15,6 +15,13 @@ services:
         source: ./grafana/loki/loki.yaml
         target: /etc/loki/local-config.yaml
       - loki-data:/loki
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=3100:3100
+      - HTTPS_EXPOSE=3100:3100
 
   agent:
     container_name: "ddev-${DDEV_SITENAME}-agent"
@@ -33,4 +40,3 @@ volumes:
     name: "ddev-${DDEV_SITENAME}_web-logs"
   loki-data:
     name: "ddev-${DDEV_SITENAME}_loki"
-

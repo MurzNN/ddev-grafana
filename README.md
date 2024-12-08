@@ -39,14 +39,26 @@ the port number to a free one.
 
 ## Installation
 
-1. In the DDEV project directory launch the command:
-```
-ddev get MurzNN/ddev-grafana
-```
+1. In the DDEV project directory:
+
+  For DDEV v1.23.5 or above run
+
+  ```sh
+  ddev add-on get MurzNN/ddev-grafana
+  ```
+
+  For earlier versions of DDEV run
+
+  ```sh
+  ddev get MurzNN/ddev-grafana
+  ```
+
 2. Restart the DDEV instance:
-```
-ddev restart
-```
+
+  ```sh
+  ddev restart
+  ```
+
 3. Open the Grafana web interface via the url:
    https://your-project-name.ddev.site:3000/
 

@@ -1,17 +1,17 @@
 apiVersion: 1
 
 datasources:
-  - name: Loki
+  - name: Logs
+    uid: loki
     type: loki
     access: proxy
     orgId: 1
-    url: http://loki:3100
+    url: http://grafana-loki:3100
     basicAuth: false
     isDefault: true
     version: 1
     editable: false
     apiVersion: 1
-    uid: loki
     jsonData:
       derivedFields:
         - datasourceUid: Tempo
@@ -19,29 +19,36 @@ datasources:
           name: trace_id
           url: "$${__value.raw}"
 
-  - name: Prometheus
+  - name: Metrics
+    uid: mimir
     type: prometheus
     access: proxy
     orgId: 1
-    url: http://prometheus:9090
-    basicAuth: false
+    url: http://grafana-mimir:8080/prometheus
+    # url: http://grafana-mimir:9009/prometheus
+    # basicAuth: false
     isDefault: false
-    version: 1
+    version: 9
     editable: false
     apiVersion: 1
-    uid: prometheus
+    jsonData:
+      # httpMethod: "POST"
+      prometheusType: "Mimir"
+      # prometheusVersion: "2.9.1"
+      # tlsSkipVerify: true
+      # timeout: 30
 
-  - name: Tempo
+  - name: Traces
+    uid: tempo
     type: tempo
     access: proxy
     orgId: 1
-    url: http://tempo:3200
+    url: http://grafana-tempo:3200
     basicAuth: false
     isDefault: false
     version: 1
     editable: false
     apiVersion: 1
-    uid: tempo
     jsonData:
       tracesToLogsV2:
         # Field with an internal link pointing to a logs data source in Grafana.

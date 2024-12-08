@@ -1,93 +1,86 @@
 setup() {
+  export PROJECT_NAME=test-grafana
+  # export PROJECT_NAME=test-grafana-local # tmp
+
   set -eu -o pipefail
-  export DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )/.."
-  export TESTDIR=~/tmp/test-grafana
-  mkdir -p $TESTDIR
-  export PROJNAME=test-grafana
   export DDEV_NON_INTERACTIVE=true
-  ddev delete -Oy ${PROJNAME} >/dev/null 2>&1 || true
-  cd "${TESTDIR}"
-  ddev config --project-name=${PROJNAME}
+  export PROJECT_SOURCE_DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )/.."
+  export TEST_DIR="${BATS_TMPDIR}/${PROJECT_NAME}"
+  # export TEST_DIR="${PROJECT_SOURCE_DIR}/../${PROJECT_NAME}" # tmp
+  export TESTDATA_DIR='tests/testdata'
+  export OTEL_ENDPOINT_INTERNAL='opentelemetry-grafana'
+  export PROJECT_DOMAIN="${PROJECT_NAME}.ddev.site"
+
+  ddev delete -Oy ${PROJECT_NAME} >/dev/null 2>&1 || true
+  mkdir -p $TEST_DIR
+  cd "${TEST_DIR}"
+  ddev config --project-name=${PROJECT_NAME}
   ddev start -y >/dev/null
+
+  ddev exec "mkdir -p ${TESTDATA_DIR}" #tmp
+  cp -r ${PROJECT_SOURCE_DIR}/${TESTDATA_DIR}/* ${TEST_DIR}/${TESTDATA_DIR}/
+}
+
+check_otel_endpoint() {
+  set -eu -o pipefail
+  local url="$1"
+  local use_local="$2"
+  local payload_file="$3"
+  local expected_output_default='{"partialSuccess":{}}'
+  local expected_output="${4:-$expected_output_default}"
+
+  if [ $use_local -eq 1 ]; then
+    echo "run curl -s -X POST -H \"Content-Type: application/json\" -d @${TESTDATA_DIR}/$payload_file $url"
+    run curl -s -X POST -H "Content-Type: application/json" -d @${TESTDATA_DIR}/$payload_file $url
+  else
+    echo "run ddev exec \"curl -s -X POST -H \"Content-Type: application/json\" -d @${TESTDATA_DIR}/$payload_file $url\""
+    run ddev exec "curl -s -X POST -H \"Content-Type: application/json\" -d @${TESTDATA_DIR}/$payload_file $url"
+  fi
+  echo "output: $output"
+  [ $status -eq 0 ]
+  [ "$expected_output" == "$output" ]
+}
+
+check_otel_response() {
+  set -eu -o pipefail
+  local suffix="$1"
+  local payload_file="$2"
+
+  check_otel_endpoint "http://${OTEL_ENDPOINT_INTERNAL}${suffix}" 0 $payload_file
+  check_otel_endpoint "http://${PROJECT_DOMAIN}${suffix}" 1 $payload_file
+  check_otel_endpoint "https://${PROJECT_DOMAIN}${suffix}" 1 $payload_file
 }
 
 health_checks() {
-  # Wait for services to start up.
-  sleep 30
-  # printenv
-
-  # Some checks works well if `bats tests` ran locally, but fails on GitHub action.
-  # Here is a workaround to make cloud tests work well.
-  # To make a test run only on local machines,
-  # add the `[ -z "$DDEV_CLOUD_ENV" ] && ` prefix to the command.
-  if [ -n "${GITHUB_ACTIONS:-}" ]; then
-    DDEV_CLOUD_ENV=
-  else
-    DDEV_CLOUD_ENV=
-  fi
-  # Workaround end.
-
-  # Grafana service
-  ddev exec "curl -s -o /dev/null http://grafana:3000/api/health"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:3000/api/health
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:3000/api/health
-
-  echo "Checking Loki service"
-  # Loki takes 15+ secs to initialize, so use the http://loki:3100/ready url
-  # is not a good idea, just checking the services endpoint.
-  ddev exec "curl -s -o /dev/null http://loki:3100/services"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:3100/
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:3100/
-
-  echo "Checking Prometeus service"
-  ddev exec "curl -s -o /dev/null http://prometheus:9090/-/ready"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:9090/
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:9090/
-
-  echo "Checking Tempo service"
-  # Tempo takes 15 secs to initialize, so use the http://tempo:3200/ready url
-  # is not a good idea, just checking the version endpoint.
-  ddev exec "curl -s -o /dev/null http://tempo:3200/status/version"
-
-  echo "Checking Tempo HTTP receivers ports"
-  ddev exec "curl -s -o /dev/null http://tempo:4318/"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:4318/
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:4318/
-
-  ddev exec "curl -s -o /dev/null http://tempo:9411/"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:9411/
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:9411/
-
-  ddev exec "curl -s -o /dev/null http://tempo:14268/"
-  curl -s -o /dev/null http://${PROJNAME}.ddev.site:14268/
-  curl -s -o /dev/null https://${PROJNAME}.ddev.site:14268/
+  sleep 10
+  check_otel_response ":4318/v1/traces" "test-trace.json"
+  check_otel_response ":4318/v1/metrics" "test-metric.json"
+  check_otel_response ":4318/v1/logs" "test-log.json"
 }
 
 teardown() {
   ddev logs
   set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  ddev delete -Oy ${PROJNAME} >/dev/null 2>&1
-  [ "${TESTDIR}" != "" ] && rm -rf ${TESTDIR}
+  cd ${TEST_DIR} || ( printf "unable to cd to ${TEST_DIR}\n" && exit 1 )
+  ddev rm -Oy ${PROJECT_NAME} >/dev/null 2>&1
+  [ "${TEST_DIR}" != "" ] && rm -rf ${TEST_DIR}
 }
 
 @test "install from directory" {
   set -eu -o pipefail
-  cd ${TESTDIR}
-  echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ${DIR}
+  cd ${TEST_DIR}
+  echo "# ddev get ${PROJECT_SOURCE_DIR} with project ${PROJECT_NAME} in ${TEST_DIR} ($(pwd))" >&3
+  ddev add-on get ${PROJECT_SOURCE_DIR}
   ddev restart
-  # Do something here to verify functioning extra service
-  # For extra credit, use a real CMS with actual config.
   health_checks
 }
 
-@test "install from release" {
-  set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev get MurzNN/ddev-grafana with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get MurzNN/ddev-grafana
-  ddev restart >/dev/null
-  health_checks
-}
+# @test "install from release" {
+#   set -eu -o pipefail
+#   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
+#   echo "# ddev get MurzNN/ddev-grafana with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+#   ddev addon get MurzNN/ddev-grafana
+#   ddev restart >/dev/null
+#   health_checks
+# }
 

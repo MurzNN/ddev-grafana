@@ -29,6 +29,8 @@ jobs:
       matrix:
         ddev_version: [stable, HEAD]
       fail-fast: false
+      # Disable parallel execution because of the issues with mounted volumes.
+      max-parallel: 1
 
     runs-on: ubuntu-latest
 

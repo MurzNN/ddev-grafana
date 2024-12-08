@@ -1,0 +1,37 @@
+services:
+  grafana-alloy:
+    container_name: 'ddev-${DDEV_SITENAME}-grafana-alloy'
+    image: grafana/alloy:latest
+    user: '${UID:-}:${GID:-}'
+    entrypoint:
+      - /bin/alloy
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - --stability.level=experimental
+      - /etc/alloy/config.alloy
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    volumes:
+      - type: bind
+        source: ./grafana/alloy/config.alloy
+        target: /etc/alloy/config.alloy
+      # - grafana-alloy-data:/var/lib/alloy/data
+      # Configuration to write logs to the file is in a separate file:
+      # config.grafana.logs.yaml
+      - web-logs-data:/var/log
+    networks:
+      default:
+        aliases:
+          - opentelemetry-grafana
+
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=12345:12345,4317:4317,4318:4318,9411:9411,14268:14268
+      - HTTPS_EXPOSE=12345:12345,4317:4317,4318:4318,9411:9411,14268:14268
+volumes:
+  # grafana-alloy-data:
+  #   name: 'ddev-${DDEV_SITENAME}_grafana-alloy-data'
+  web-logs-data:
+    name: 'ddev-${DDEV_SITENAME}_web-logs'

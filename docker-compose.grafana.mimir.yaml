@@ -1,0 +1,24 @@
+services:
+  grafana-mimir:
+    container_name: 'ddev-${DDEV_SITENAME}-grafana-mimir'
+    image: grafana/mimir:latest
+    user: '${UID:-}:${GID:-}'
+    entrypoint:
+      - /bin/mimir
+      - -config.file=/etc/mimir-config/mimir.yaml
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    volumes:
+      - type: bind
+        source: ./grafana/mimir/mimir.yaml
+        target: /etc/mimir-config/mimir.yaml
+      - grafana-mimir-data:/data
+
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=9009:9009
+      - HTTPS_EXPOSE=9009:9009
+volumes:
+  grafana-mimir-data:
+    name: 'ddev-${DDEV_SITENAME}_grafana-mimir-data'

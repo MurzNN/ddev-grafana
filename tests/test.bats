@@ -96,7 +96,7 @@ teardown() {
 @test "install from directory" {
   set -eu -o pipefail
   cd ${TEST_DIR}
-  echo "# ddev get ${PROJECT_SOURCE_DIR} with project ${PROJECT_NAME} in ${TEST_DIR} ($(pwd))" >&3
+  echo "# ddev add-on get ${PROJECT_SOURCE_DIR} with project ${PROJECT_NAME} in ${TEST_DIR} ($(pwd))" >&3
   ddev add-on get ${PROJECT_SOURCE_DIR}
   ddev restart
   health_checks

@@ -41,14 +41,6 @@ the port number to a free one.
 
 1. In the DDEV project directory:
 
-  For DDEV v1.23.5 or above run
-
-  ```sh
-  ddev add-on get MurzNN/ddev-grafana
-  ```
-
-  For earlier versions of DDEV run
-
   ```sh
   ddev get MurzNN/ddev-grafana
   ```
@@ -62,28 +54,12 @@ the port number to a free one.
 3. Open the Grafana web interface via the url:
    https://your-project-name.ddev.site:3000/
 
-## Customizations
+4. Configure the OpenTelemetry endpoint in your application
+   to the `http://opentelemetry-grafana:4318`.
 
-If you need to run several projects with Tempo OpenTelemetry collectors, with
-default settings it will fail, because several projects can't use the same port
-number on the host network. To fix this you should disable mapping ports to the
-host network on the second project via renaming the file
-`docker-compose.grafana.host-ports.yaml` to
-`docker-compose.grafana.host-ports.yaml.disabled`, or change port numbers to
-unique ones, and restart the projects.
-
-
-If you want to disable binding Grafana services to the localhost, rename the
-files:
-- `docker-compose.grafana.localhost.yaml` to
-  `docker-compose.grafana.namedhosts.yaml.disabled`
-- `docker-compose.grafana.namedhosts.yaml.disabled` to
-  `docker-compose.grafana.namedhosts.yaml`
-
-
-If you need to expose non-HTTP ports (gRPC, etc), you can uncomment them in the
-`docker-compose.grafana.localhost.yaml` file.
-
+   By default, the add-on configures the `OTEL_EXPORTER_OTLP_ENDPOINT`
+   environment variable with this endpoint, you can disable this in the file
+   `.ddev/config.grafana.logs.yaml`.
 
 ** Contributed and maintained by [@MurzNN](https://github.com/MurzNN).
 

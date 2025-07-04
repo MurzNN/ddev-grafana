@@ -9,24 +9,29 @@
 
 ## What is ddev-grafana?
 
-This repository provides Grafana stack addon to
+This repository provides a Grafana LGTM+ Stack addon to
 [DDEV](https://ddev.readthedocs.io).
 
-It contains several components from Grafana stack:
+It contains several components from the Grafana stack:
 
-- **[Grafana](https://grafana.com/grafana/)**: an open source analytics and
+- **[Grafana](https://grafana.com/oss/grafana/)**: an open source analytics and
   interactive visualization web application. It provides charts, graphs, and
   alerts for the web when connected to supported data sources.
 
-- **[Prometheus](https://prometheus.io/)**: an open source monitoring solution
-  written in Go that collects metrics data and stores that data in a time series
-  database.
-
-- **[Loki](https://grafana.com/logs/)**: a horizontally scalable, highly
+- **[Loki](https://grafana.com/oss/loki/)**: a horizontally scalable, highly
   available, multi-tenant log aggregation solution.
 
-- **[Tempo](https://grafana.com/traces/)**: an open source, easy-to-use, and
+- **[Tempo](https://grafana.com/oss/tempo/)**: an open source, easy-to-use, and
   high-scale distributed tracing backend.
+
+- **[Mimir](https://grafana.com/oss/mimir/)**: an open source, horizontally
+  scalable, highly available, multi-tenant TSDB for long-term storage for
+  Prometheus.
+
+- **[Alloy](https://grafana.com/oss/alloy-opentelemetry-collector/)**: an open
+  source OpenTelemetry collector with built-in Prometheus pipelines and support
+  for metrics, logs, traces, and profiles.
+
 
 ## Installation
 

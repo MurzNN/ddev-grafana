@@ -56,7 +56,6 @@ local.file_match "logs" {
   path_targets = [
     {__path__ = "/var/log/nginx/*.log", "service_name" = "nginx"},
     {__path__ = "/var/log/apache2/*.log", "service_name" = "apache"},
-    {__path__ = "/var/log/syslog", "service_name" = "syslog"},
   ]
 }
 

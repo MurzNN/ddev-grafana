@@ -3,9 +3,12 @@ server:
   # log_level: debug
 
 distributor:
-  receivers: # this configuration will listen on all ports and protocols that tempo is capable of.
-    jaeger: # the receives all come from the OpenTelemetry collector.  more configuration information can
-      protocols: # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+  receivers:
+    # this configuration will listen on all ports and protocols that tempo is capable of.
+    jaeger:
+      # the receives all come from the OpenTelemetry collector.  more configuration information can
+      protocols:
+        # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
         thrift_http: #
         grpc: # for a production deployment you should only enable the receivers you need!
         thrift_binary:
@@ -13,12 +16,17 @@ distributor:
     zipkin:
     otlp:
       protocols:
-        http: # port 4318
+        http:
+          # port 4318
+          endpoint: 0.0.0.0:4318 # Listen on all IPs to accept request from Alloy.
           cors:
             allowed_origins:
-              - "*"
-        grpc: # port 4317
+            - "*"
+        grpc:
+          # port 4317
+          endpoint: 0.0.0.0:4317 # Listen on all IPs to accept request from Alloy.
     opencensus:
+
 
 storage:
   trace:
